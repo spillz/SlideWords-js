@@ -1289,7 +1289,9 @@ class MessageBar extends eskv.BoxLayout {
                 this.message = 'GAME OVER';
             }
         } else {
-            this.message = '';
+            if (this.message === 'GAME OVER') {
+                this.message = '';
+            }
         }
     }
 
