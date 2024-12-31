@@ -1,0 +1,288 @@
+<TextButton@Button>:
+    color: 'rgb(1, 1, 1)'
+    bgColor: 'rgb(0xbb, 0xad, 0xa0)'
+    fontSize: 0.5
+    bold: true
+
+<HeadingLabel@Label>:
+    bgColor: resources['colors']['checker']
+    fontSize: 0.6
+
+<BodyLabel@Label>:
+    fontSize: 0.5
+
+
+<ScoreBar>:
+    id: 'scorebar'
+    bgColor: resources['colors']['background']
+    hints: {w: null, h: null}
+    score: 0
+    hiScore: 0
+    score_2: 0
+    players: 1
+    activePlayer: 1
+    gameId: ''
+    orientation: 'horizontal'
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            hints: {w: 1, h: 0.33}
+            text: scorebar.players === 1 ? 'SCORE' : 'PLAYER 1'
+            color: scorebar.activePlayer == 2 || scorebar.players == 1? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            align: 'left'
+            valign: 'bottom'
+            fontSize:0.25
+        Label:
+            hints: {w: 1, h: 0.67}
+            text: scorebar.score.toString()
+            color: scorebar.activePlayer === 2 || scorebar.players == 1? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            align: 'left'
+            valign: 'top'
+            fontSize:0.5
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: scorebar.players === 2 ? 'MULTIPLAYER': scorebar.gameId!=='default' ? 'DAILY CHALLENGE' : 'RANDOM GAME'
+            color: resources['colors']['score_text']
+            valign: 'top'
+            fontSize: 0.6
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            hints: {w: 1, h: 0.33}
+            text: scorebar.players === 1 ? 'BEST' : 'PLAYER 2'
+            color: scorebar.activePlayer == 1 || scorebar.players == 1 ? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            align: 'right'
+            valign: 'bottom'
+            fontSize:0.25
+        Label:
+            hints: {w: 1, h: 0.67}
+            text: scorebar.players === 1 ? scorebar.hiScore.toString() : scorebar.score_2.toString()
+            color: scorebar.activePlayer == 1 || scorebar.players == 1 ? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            align: 'right'
+            valign: 'top'
+            fontSize:0.5
+
+<WordBar>:
+    id: 'wordbar'
+    hints: {w: null, h: null}
+    orientation: 'vertical'
+    word: ''
+    wordScore: 0
+    canPass: true
+    bgColor: wordbar.word!=='' || wordbar.canPass ? resources['colors']['word_score_background'] : resources['colors']['background']
+    Label:
+        id: 'wordLabel'
+        text: wordbar.word!=='' ? wordbar.word+' for '+wordbar.wordScore.toString() : wordbar.canPass ? 'PASS' : ''
+        color: resources['colors']['word_score_text']
+
+<MessageBar@BoxLayout>:
+    id: 'messagebar'
+    orientation: 'vertical'
+    message: ''
+    Label:
+        text: messagebar.message
+        color: resources.colors['score_text']
+
+
+<MenuItem@Button>:
+    bgColor: resources['colors']['menu_button_background']
+    selectColor: resources['colors']['menu_button_touched']
+    hints: {h:'1'}
+
+
+<InstructionsBox@BoxLayout>:
+    bgColor: resources['colors']['checker']
+
+
+
+<Instructions>:
+    id: 'instructions'
+    hints: {x:0.1, y:0.1, h:0.8, w:0.8}
+    orientation: 'vertical'
+    paddingX: '0.01'
+    paddingY: '0.01'
+    spacingX: '0.01'
+    bgColor: resources['colors']['background']
+    HeadingLabel:
+        hints: {w: 1, h: 0.1}
+        text: 'How to Play'
+    ScrollView:
+        id: 'scroller'
+        hints: {w: 1, h: 0.8}
+        scrollW: false
+        BodyLabel:
+            color: 'white'
+            hints: {x:0, y:0, w:1, h:null}
+            text: 'Objective: Clear the board by arranging letters to form words, scoring points based on word length and letter rarity.\n\nTo form words, select letter tiles in place or drag them in a straight line into neighboring free tile spaces. A word is valid if it is composed of connected letter tiles in a straight line (either vertically, horizontally or diagonally in either direction), is in the dictionary, and at least one tile was moved to form it. Score a valid word by pressing the word cue at bottom of the screen. Each word scores points equal to the sum of the tile values multiplied by the number of letters in the word. Cancel a selection by tapping any of the selected tiles.'
+            align: 'left'
+            valign: 'top'
+            wrap: true
+
+
+<ScoreDetail1p@BoxLayout>:
+    id: 'scoredetails1p'
+    hints: {x: 0.1, y: 0.1, w: 0.8, h: 0.8}
+    orientation: 'vertical'
+    paddingX: '0.01'
+    paddingY: '0.01'
+    spacingY: '0.01'
+    spacingX: '0.01'
+    detail: ''
+    title: 'In Progress'
+    bgColor: resources['colors']['background']
+    HeadingLabel:
+        hints: {w: 1, h: '1'}
+        text: scoredetails1p.title
+        valign: 'middle'
+        align: 'center'
+    ScrollView:
+        padding: 0.1
+        scrollW: false
+        BodyLabel:
+            text: scoredetails1p.detail
+            align: 'left'
+            valign: 'top'
+            wrap: true
+            hints: {x:0, y:0, h:null,  w:1}
+            fontSize: 0.5
+
+
+<ScoreDetail2p@BoxLayout>:
+    id: 'scoredetail2p'
+    hints: {x: 0.1, y: 0.1, w: 0.8, h: 0.8}
+    orientation: 'vertical'
+    paddingX: '0.01'
+    paddingY: '0.01'
+    spacingY: '0.01'
+    spacingX: '0.01'
+    detail1: ''
+    detail2: ''
+    title: 'In Progress'
+    bgColor: resources['colors']['background']
+    HeadingLabel:
+        hints: {w: 1, h: '1'}
+        text: scoredetail2p.title
+        valign: 'middle'
+        align: 'center'
+    BoxLayout:
+        orientation: 'horizontal'
+        paddingX: 0.05;
+        ScrollView:
+            hints: {w: 0.475, h: 1}
+            scrollW: false
+            BodyLabel:
+                hints: {x:0, y:0, h:null,  w:1}
+                text: scoredetail2p.detail1
+                fontSize: 0.5
+                align: 'left'
+                valign: 'top'
+                wrap: true
+        ScrollView:
+            hints: {w: 0.475, h: 1}
+            scrollW: false
+            BodyLabel:
+                hints: {x:0, y:0, h:null,  w:1}
+                text: scoredetail2p.detail2
+                align: 'right'
+                valign: 'top'
+                wrap: true
+                fontSize: 0.5
+
+
+<Menu>:
+    id: 'mainMenu'
+    orientation: 'vertical'
+    hints: {center_x:0.5, center_y:0.5, h:null, w:0.8}
+    selection: '';
+    bgColor: resources['colors']['background']
+    paddingX: '0.01'
+    paddingY: '0.01'
+    spacingY: '0.01'
+    spacingX: '0.01'
+    MenuItem:
+        text: 'Restart Game'
+        on_press: 
+            this.parent.selection = 'restartGame'
+    MenuItem:
+        text: 'Random Game'
+        on_press: 
+            this.parent.selection = 'randomGame'
+    MenuItem:
+        text: 'Daily Challenge'
+        on_press: 
+            this.parent.selection = 'dailyGame'
+    MenuItem:
+        text: 'Multiplayer'
+        on_press: 
+            this.parent.selection = 'multiplayerMenu'
+    MenuItem:
+        text: 'Instructions'
+        on_press: 
+            this.parent.selection = 'instructions'
+#    MenuItem:
+#        text: 'Leaderboards'
+#        on_press: 
+#            this.parent.selection = 'leaderboardMenu'
+#    MenuItem:
+#        text: 'Achievements'
+#        on_press: 
+#            this.parent.selection = 'achievements'
+#    MenuItem:
+#        text: 'Theme'
+#        on_press: 
+#            this.parent.selection = 'theme'
+#    MenuItem:
+#        text: 'Quit'
+#        on_press: 
+#            this.parent.selection = 'quit'
+
+
+<MultiplayerMenu>:
+    hints: {center_x:0.5, center_y:0.5, h:null, w:0.8}
+    id: 'multiplayerMenu'
+    orientation: 'vertical'
+    player1: 1
+    player2: 1
+    players: ['','Human', 'AI']
+    selection: ''
+    paddingX: '0.01'
+    paddingY: '0.01'
+    spacingY: '0.01'
+    spacingX: '0.01'
+    bgColor: resources['colors']['background']
+    MenuItem:
+        text: 'Start Game'
+        on_press:
+            this.parent.selection = 'multiplayerGame'
+    MenuItem:
+        text: multiplayerMenu.players[multiplayerMenu.player1]
+        on_press:
+            this.parent.selection = 'player1'
+    MenuItem:
+        text: multiplayerMenu.players[multiplayerMenu.player2]
+        on_press:
+            this.parent.selection = 'player2'
+
+
+<LeaderboardMenu>:
+    hints: {center_x:0.5, center_y:0.5, h:null, w:0.8}
+    orientation: 'vertical'
+    selection: ''
+    bgColor: resources['colors']['background']
+    paddingX: '0.01'
+    paddingY: '0.01'
+    spacingY: '0.01'
+    spacingX: '0.01'
+    MenuItem:
+        text: 'High Score'
+        on_press:
+            this.parent.selection = 'highScore'
+    MenuItem:
+        text: 'Daily Game High Score'
+        on_press:
+            this.parent.selection = 'dailyHighScore'
+    MenuItem:
+        text: 'Number of 1,000+ Games'
+        on_press:
+            this.parent.selection = 'number1000'
