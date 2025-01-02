@@ -40,7 +40,7 @@ export async function loadWords(url) {
     try {
         const response = await fetch(url);
         const text = await response.text();
-        words = new Set(text.split('\n'));
+        words = new Set(text.replace(/\r/g, '').split('\n'));
         return true;
     } catch (err) {
         console.error(`Error loading file: ${url}`, err);

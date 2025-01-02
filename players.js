@@ -2,7 +2,7 @@
 
 import * as eskv from '../eskv/lib/eskv.js';
 import { boardDim, words } from './globals.js';
-import { Board, Tile } from './main.js';
+import { Board, Tile } from './board.js';
 
 /**
  * 
@@ -147,21 +147,33 @@ export class AIPlayer extends Player {
      */
     constructor(board, pid) {
         super(board, pid);
+        /** @type {Promise|undefined} */
+        this._findPromise = undefined;
         this.type = 1;
-        this.vocab = 0;  // number of words in vocabulary (0 for all)
-        this.randomVocab = false;  // true to randomly determine the vocab (weighted by frequency)
-        this.randomVocabSeed = 0;  // the seed to use to draw the vocab
-        this.maxWordLen = boardDim;  // maximum length of words to check for
-        this.maxChecks = 500000;  // maximum number of word checks allowed before turn ends
-        this.name = '';  // no name suppresses from the list of playable AIs
-        this._abort = false;  // set to true when a game is aborted
-        this._dead = false;  // when a game is aborted, dead is set to true
+        /** number of words in vocabulary (0 for all) */
+        this.vocab = 0;
+        /**true to randomly determine the vocab (weighted by frequency) */
+        this.randomVocab = false;
+        /**the seed to use to draw the vocab */
+        this.randomVocabSeed = 0; 
+        /* maximum length of words to check for */
+        this.maxWordLen = boardDim;  
+        /**maximum number of word checks allowed before turn ends */
+        this.maxChecks = 500000; 
+        this.name = '';
+        /* Main game sets to true when a game is aborted  to tell the player to stop it's move */
+        this._abort = false;  
+        /* when the player has  responded to an aborted game, dead is set to true */
+        this._dead = false; 
+        /** Counter to track the number */
         this.counter = 0;
         /**@type {[[number, number],[number, number]][]} */
         this.sel = [];
         /**@type {Set<string>} */
+        /** The AI's dictionary of words */
         this.words = new Set();
-        this.setupWords()
+        this.setupWords();
+        /** Board state at the start of the player's turn */
         this.initState = this.boardState();
     }
 
@@ -300,6 +312,7 @@ export class AIPlayer extends Player {
                 } else {
                     this.counter++;
                     const word = arrSel.map(s => this.initState[`${s[0][0]},${s[0][1]}`].letter).join('');
+                    // console.log('Testing', word, arrSel);
                     if (this.words.has(word) || this.words.has([...word].reverse().join(''))) {
                         const score = arrSel.reduce((acc, s) => acc + this.initState[`${s[0][0]},${s[0][1]}`].value, 0) * word.length;
                         const nsel = arrSel.map(s => [s[0], s[1]]);
@@ -362,7 +375,7 @@ export class AIPlayer extends Player {
     
         for (let start_point = 0; start_point < coords.length; start_point++) {
             for (let end_point = start_point + 1; end_point < Math.min(coords.length, start_point + this.maxWordLen); end_point++) {
-                console.log('AI step', this.counter);  // Adjusted for JavaScript console output
+                // console.log('AI step', this.counter);  // Adjusted for JavaScript console output
                 if (this._abort) {
                     return [];
                 }
@@ -387,13 +400,22 @@ export class AIPlayer extends Player {
         }
     }
 
-    findMove() {
+    /**
+     * Outer logic loop of the AI turn. Determines a set of "lines" (horizontally, vertically and diagonally) that run through an empty space
+     * Then for each line seeks out tile movements that produce a valid word on that line. The best scoring move of all candidates is selected
+     * in the UI and scored as the players turn
+     * @returns 
+     */
+    async findMove() {
         this.counter = 0;
-        let state = {...this.initState}; // Assuming initState is an object and making a shallow copy
+        let state = {...this.initState};
         let candidates = [];
         let empty = this.emptyCells(state);
         let lines = new Set();
     
+        /**
+         * For each empty cell, we can run a word in 1 of 4 directions (this produces some needless replication currently because the set does not detect duplicated in the array)
+         */
         empty.forEach(e => {
             lines.add([1, 0, e[1]]);
             lines.add([0, 1, e[0]]);
@@ -415,7 +437,6 @@ export class AIPlayer extends Player {
         if (candidates.length > 0) {
             let maxScore = Math.max(...candidates.map(c => c[1]));
             let bestCandidates = candidates.filter(c => c[1] === maxScore);
-            console.log('number of candidates', bestCandidates.length);
             setTimeout(() => this.foundWord(this.chooseRandom(bestCandidates)), 1);
             return;
         }
@@ -433,7 +454,7 @@ export class AIPlayer extends Player {
         
     startTurn() {
         this.initState = this.boardState();
-        this.findMove();  // This should ideally be asynchronous
+        this._findPromise = this.findMove();  // This should ideally be asynchronous
     }
 
     /**
@@ -452,14 +473,18 @@ export class AIPlayer extends Player {
     }
     
     doNext() {
+        console.log('DO NEXT', this.sel);
         eskv.App.get().requestFrameUpdate();
         if (this._dead) {
             return;
         }
         if (this.sel.length>0) {
-            const [src, dest] = this.sel.shift(); // Removes the first element and returns it
-            this.board.selectInPos(this.board.getAtGpos(new eskv.Vec2(src)), new eskv.Vec2(dest));
-            setTimeout(() => this.doNext(), 500); // Schedule the next action after 0.5 seconds    
+            const [src, dest] = /**@type {[[number, number], [number, number]]}*/(this.sel.shift()); // Removes the first element and returns it
+            const tile = this.board.getAtGpos(new eskv.Vec2(src))
+            if (tile) {
+                this.board.selectInPos(tile, new eskv.Vec2(dest));
+                setTimeout(() => this.doNext(), 500); // Schedule the next action after 0.5 seconds        
+            }
         } else {
             setTimeout(() => this.endTurn(), 2000); // Schedule end turn after 2 seconds if an error occurs
         }

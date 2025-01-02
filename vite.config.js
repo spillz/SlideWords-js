@@ -1,6 +1,6 @@
 export default {
-    base: '/slidewords/',
     build: {
+        base: '/slidewords/',
         target: 'es2019', //es2019
         minify: false,
     }

@@ -19,7 +19,7 @@
     score: 0
     hiScore: 0
     score_2: 0
-    players: 1
+    playerCount: 1
     activePlayer: 1
     gameId: ''
     orientation: 'horizontal'
@@ -27,15 +27,15 @@
         orientation: 'vertical'
         Label:
             hints: {w:1, h:'1'}
-            text: scorebar.players === 1 ? 'SCORE' : 'PLAYER 1'
-            color: scorebar.activePlayer == 2 || scorebar.players == 1? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            text: scorebar.playerCount === 1 ? 'SCORE' : 'PLAYER 1'
+            color: scorebar.activePlayer === 2 || scorebar.playerCount === 1? resources['colors']['score_text'] : resources['colors']['active_score_text']
             align: 'left'
             valign: 'bottom'
             fontSize: 0.4
             shrinkToFit: true
         Label:
             text: scorebar.score.toString()
-            color: scorebar.activePlayer === 2 || scorebar.players == 1? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            color: scorebar.activePlayer === 2 || scorebar.playerCount === 1? resources['colors']['score_text'] : resources['colors']['active_score_text']
             align: 'left'
             valign: 'top'
             fontSize: 0.5
@@ -43,7 +43,7 @@
         orientation: 'vertical'
         hints: {w:1, h:'2'}
         Label:
-            text: scorebar.players === 2 ? '2-PLAYER\nGAME': scorebar.gameId!=='default' ? 'DAILY\nCHALLENGE' : 'RANDOM\nGAME'
+            text: scorebar.playerCount === 2 ? '2-PLAYER\nGAME': scorebar.gameId!=='default' ? 'DAILY\nCHALLENGE' : 'RANDOM\nGAME'
             color: resources['colors']['score_text']
             valign: 'middle'
             fontSize: 0.6
@@ -53,15 +53,15 @@
         orientation: 'vertical'
         Label:
             hints: {w:1, h:'1'}
-            text: scorebar.players === 1 ? 'BEST' : 'PLAYER 2'
-            color: scorebar.activePlayer == 1 || scorebar.players == 1 ? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            text: scorebar.playerCount === 1 ? 'BEST' : 'PLAYER 2'
+            color: scorebar.activePlayer === 1 || scorebar.playerCount === 1 ? resources['colors']['score_text'] : resources['colors']['active_score_text']
             align: 'right'
             valign: 'bottom'
             fontSize:0.4
             shrinkToFit: true
         Label:
-            text: scorebar.players === 1 ? scorebar.hiScore.toString() : scorebar.score_2.toString()
-            color: scorebar.activePlayer == 1 || scorebar.players == 1 ? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            text: scorebar.playerCount === 1 ? scorebar.hiScore.toString() : scorebar.score_2.toString()
+            color: scorebar.activePlayer === 1 || scorebar.playerCount === 1 ? resources['colors']['score_text'] : resources['colors']['active_score_text']
             align: 'right'
             valign: 'top'
             fontSize:0.5
