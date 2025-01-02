@@ -14,7 +14,6 @@
 
 <ScoreBar>:
     id: 'scorebar'
-    bgColor: resources['colors']['background']
     hints: {w: null, h: null}
     score: 0
     hiScore: 0
