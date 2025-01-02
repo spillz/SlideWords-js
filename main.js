@@ -1339,6 +1339,7 @@ class SlideWordsApp extends eskv.App {
     constructor(props={}) {
         super();
         // eskv.App.rules.add('Label', {fontName: "Arial, Helvetica, sans-serif"});
+        eskv.App.rules.add('ScrollView', {uiZoom: false, scrollW: false});
         const markupObjects = eskv.markup.parse(markup);
         this.updateProperties(props)
         /**@type {Map<string, string>} */
