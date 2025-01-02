@@ -1,8 +1,8 @@
 //@ts-check
 
 import * as eskv from '../eskv/lib/eskv.js';
-import { boardDim } from './globals.js';
-import { Board, Tile, words } from './main.js';
+import { boardDim, words } from './globals.js';
+import { Board, Tile } from './main.js';
 
 /**
  * 

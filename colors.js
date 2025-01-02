@@ -1,6 +1,8 @@
+//@ts-check
+
 /**@typedef {[number, number, number, number]} ColorNum*/
 
-/**@typedef {{background:ColorNum,title:ColorNum, tile_selected:ColorNum, tile_letter_text:ColorNum, word_score_background:ColorNum, word_score_text:ColorNum, score_text:ColorNum, active_score_text:ColorNum, checker:ColorNum, move_candidates:ColorNum, menu_button_background:ColorNum }} Theme */
+/**@typedef {{background:ColorNum, tile:ColorNum, tile_selected:ColorNum, tile_letter_text:ColorNum, word_score_background:ColorNum, word_score_text:ColorNum, score_text:ColorNum, active_score_text:ColorNum, checker:ColorNum, move_candidates:ColorNum, menu_button_background:ColorNum, menu_button_touched:ColorNum }} Theme */
 
 /**@type {Theme} */
 const default_theme = {
@@ -34,7 +36,7 @@ const beach_theme = {
     'menu_button_touched': [252, 157, 84, 1],
     }
 
-    /**@type {{Object<string, Theme>}} */
+/**@type {Object<string, Theme>} */
 export const themes = {
     'default': default_theme,
     'beach' : beach_theme

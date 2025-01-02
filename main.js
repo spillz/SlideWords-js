@@ -1,8 +1,8 @@
 //@ts-check
 import * as eskv from '../eskv/lib/eskv.js';
 import * as colors from './colors.js';
-import { Player, AIPlayer, playerTypes, playerNames} from './players.js';
 import * as globals from './globals.js';
+import { Player, AIPlayer, playerTypes, playerNames} from './players.js';
 
 //@ts-ignore
 import urlWords from './TWL06.txt?url';
@@ -46,19 +46,6 @@ function* permutations(elements, length) {
  */
 function repeat(value, reps) {
     return Array(reps).fill(value);
-}
-
-async function loadWords(url) {
-    try {
-        const response = await fetch(url);
-        const text = await response.text();
-        const words = new Set(text.split('\n'));
-        return words;
-    } catch (err) {
-        console.error(`Error loading file: ${url}`, err);
-        throw err;
-    }
-    return new Set('');
 }
 
 // async function loadMarkup(url) {
@@ -236,6 +223,20 @@ export class Tile extends eskv.Widget {
     }
 }
 
+class MenuButton extends eskv.Button {
+    /**@type {eskv.Button['draw']}*/
+    draw(app, ctx) {
+        let r = this.rect;
+        ctx.beginPath();
+        ctx.rect(r[0], r[1], r[2], r[3]/5);        
+        ctx.rect(r[0], r[1] + r[3]*0.4, r[2], r[3]/5);        
+        ctx.rect(r[0], r[1] + r[3]*0.8, r[2], r[3]/5);
+        ctx.fillStyle = this._touching ? eskv.App.resources['colors']['menu_button_touched']: eskv.App.resources['colors']['score_text'];
+        ctx.fill();
+
+    }
+}
+
             
 export class Board extends eskv.Widget {
     gameOver = false;
@@ -248,7 +249,7 @@ export class Board extends eskv.Widget {
         this.firstStart = true;
         this.updateProperties({});
         this.hints = {x:0, y:0, w:1, h:1};
-        this.words = words;
+        this.words = globals.words;
         this.scorebar = new ScoreBar();
         this.wordbar = new WordBar();
         this.messagebar = new  MessageBar();
@@ -258,11 +259,11 @@ export class Board extends eskv.Widget {
         this.scorebar.bind('score_2', (e,o,v)=>this.updatePassBar());
         this.scorebar.bind('activePlayer', (e,o,v)=>this.messagebar.activePlayerChanged(o,v));
         this.scorebar.bind('touch_down', (e,o,v)=>this.onTouchScore(o,v));
-        this.wordbar.bind('touch_down', (e,o,v) => this.confirmWord(o,v));
+        this.wordbar.bind('press', (e,o,v) => this.confirmWord(o,v));
         this.bind('gameOver', (e,o,v)=>this.messagebar.gameOver(o, v));
         this.menu = new Menu();
         this.menu.bind('selection', (e,o,v) => this.menuChoice(o,v));
-        this.menuButton = new eskv.Button({text:'MENU', 
+        this.menuButton = new MenuButton({text:'MENU', 
             bgColor:eskv.App.resources['colors']['menu_button_background'], 
             selectColor:eskv.App.resources['colors']['menu_button_touched'],
             align: 'center',
@@ -597,20 +598,21 @@ export class Board extends eskv.Widget {
         this.offX = (this.size[0] - this.boardSize) / 2;
         this.offY = 2;
 
-        this.menuButton.size = new eskv.Vec2([2, 1]);
-        this.menuButton.pos = new eskv.Vec2([0, this.size[1]-1]);
+        // Update menuButton size and position
+        this.menuButton.size = new eskv.Vec2([0.5, 0.5]);
+        this.menuButton.pos = new eskv.Vec2([0.25, 0.75]);
 
         // Update messageBar size and position
         this.messagebar.size = new eskv.Vec2([this.size[0], 1]);
         this.messagebar.pos = new eskv.Vec2([0, this.size[1]-1]);
 
         // Update wordBar size and position
-        this.wordbar.size = new eskv.Vec2([this.size[0] * 3 / 4, 0.8]);
-        this.wordbar.pos = new eskv.Vec2([this.size[0] / 8, this.size[1] - 1.9 - (this.size[1] - this.boardSize - 4)/2 ]);
+        this.wordbar.size = new eskv.Vec2([this.boardSize, 0.8]);
+        this.wordbar.pos = new eskv.Vec2([this.offX, this.size[1] - 1.9 - (this.size[1] - this.boardSize - 4)/2 ]);
 
         // Update scoreBar size and position
-        this.scorebar.size = new eskv.Vec2([this.size[0], 2]);
-        this.scorebar.pos = new eskv.Vec2([0, 0]);
+        this.scorebar.size = new eskv.Vec2([this.size[0] - 2, 2]);
+        this.scorebar.pos = new eskv.Vec2([1, 0]);
 
         // Update tile positions and sizes
         this.tileWidgets.forEach(tile => {
@@ -696,7 +698,7 @@ export class Board extends eskv.Widget {
     }
 
     updatePassBar() {
-        this.wordbar.canPass = !this.gameOver && this.scorebar.players!==1;
+        this.wordbar.canPass = !this.gameOver && this.scorebar.players!==1 && this.selection.length===0;
     }
 
     resetSelected() {
@@ -833,13 +835,7 @@ export class Board extends eskv.Widget {
     }
     
     confirmWord(widget, touch) {
-        if (!this.activePlayer.localTouch()) {
-            return false;
-        }
-        if (!widget.collide(touch.rect)) {
-            return false;
-        }
-        if (this.wordbar.wordScore===0 && !this.wordbar.canPass) {
+        if (this.wordbar.word==='' && this.selection.length>0) {
             return false;
         }
 
@@ -1245,18 +1241,17 @@ class ScoreBar extends eskv.BoxLayout {
          
 eskv.App.registerClass('ScoreBar', ScoreBar, 'BoxLayout');
 
-class WordBar extends eskv.BoxLayout {
+class WordBar extends eskv.Button {
     word = '';
     wordScore = 0;
     canPass = false;
-    constructor(props = {}) {
+    constructor(props={}) {
         super();
-        if(props) this.updateProperties(props);
-        this.wWordLabel = this.findById('wordLabel');  
+        this.updateProperties(props);
     }
 }
 
-eskv.App.registerClass('WordBar', WordBar, 'BoxLayout')
+eskv.App.registerClass('WordBar', WordBar, 'Button')
 
 
 class MessageBar extends eskv.BoxLayout {
@@ -1276,13 +1271,13 @@ class MessageBar extends eskv.BoxLayout {
         if (gameOver) {
             if (board.scorebar.players === 2) {
                 if (board.scorebar.score_2 === board.scorebar.score) {
-                    this.message = 'DRAW!'                    
+                    this.message = 'GAME OVER: DRAW!'                    
                 } else {
                     const winner = board.scorebar.score_2 > board.scorebar.score ? 2:1;
                     if (board.players[winner].type === 1) {
-                        this.message = `PLAYER ${winner} WINS!`;
+                        this.message = `GAME OVER: PLAYER ${winner} WINS!`;
                     } else {
-                        this.message = `${board.players[winner].name} WINS!`;
+                        this.message = `GAME OVER: ${board.players[winner].name} WINS!`;
                     }    
                 }
             } else {
@@ -1340,24 +1335,24 @@ class SlideWordsApp extends eskv.App {
     prefDimW = 10;
     constructor(props={}) {
         super();
+        // eskv.App.rules.add('Label', {fontName: "Arial, Helvetica, sans-serif"});
         const markupObjects = eskv.markup.parse(markup);
         this.updateProperties(props)
         /**@type {Map<string, string>} */
         this.config = new Map();
         this.colors = {};
-        this.words = words;
+        this.words = globals.words;
         try {
             this.colors = colors.loadTheme(this.config.get('theme')??'default');
         } catch (error) {
             this.colors = colors.loadTheme('default');
         }
         eskv.App.resources['colors'] = this.colors;
-        this.gb = new Board(words);
+        this.gb = new Board(this.words);
         this.baseWidget.addChild(this.gb);
     }
     static get() {
-        if(!eskv.App.appInstance) eskv.App.appInstance = new SlideWordsApp();
-        return eskv.App.appInstance;
+        return /**@type {SlideWordsApp} */(eskv.App.get());
     }
     setNextTheme() {
         const themes = Object.keys(colors.themes);
@@ -1405,10 +1400,9 @@ class SlideWordsApp extends eskv.App {
     }
 }
 
-/**@type {Set<string>} */
-export var words;
-loadWords(urlWords).then((result)=>{
-    words = result;
-    SlideWordsApp.get().start();    
+globals.loadWords(urlWords).then((result)=>{
+    if (result) {
+        new SlideWordsApp().start();    
+    }
 });
 

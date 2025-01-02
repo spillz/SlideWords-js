@@ -26,37 +26,40 @@
     BoxLayout:
         orientation: 'vertical'
         Label:
-            hints: {w: 1, h: 0.33}
+            hints: {w:1, h:'1'}
             text: scorebar.players === 1 ? 'SCORE' : 'PLAYER 1'
             color: scorebar.activePlayer == 2 || scorebar.players == 1? resources['colors']['score_text'] : resources['colors']['active_score_text']
             align: 'left'
             valign: 'bottom'
-            fontSize:0.25
+            fontSize: 0.4
+            shrinkToFit: true
         Label:
-            hints: {w: 1, h: 0.67}
             text: scorebar.score.toString()
             color: scorebar.activePlayer === 2 || scorebar.players == 1? resources['colors']['score_text'] : resources['colors']['active_score_text']
             align: 'left'
             valign: 'top'
-            fontSize:0.5
+            fontSize: 0.5
     BoxLayout:
         orientation: 'vertical'
+        hints: {w:1, h:'2'}
         Label:
-            text: scorebar.players === 2 ? 'MULTIPLAYER': scorebar.gameId!=='default' ? 'DAILY CHALLENGE' : 'RANDOM GAME'
+            text: scorebar.players === 2 ? '2-PLAYER\nGAME': scorebar.gameId!=='default' ? 'DAILY\nCHALLENGE' : 'RANDOM\nGAME'
             color: resources['colors']['score_text']
-            valign: 'top'
+            valign: 'middle'
             fontSize: 0.6
+            wrap: True
+            shrinkToFit: true
     BoxLayout:
         orientation: 'vertical'
         Label:
-            hints: {w: 1, h: 0.33}
+            hints: {w:1, h:'1'}
             text: scorebar.players === 1 ? 'BEST' : 'PLAYER 2'
             color: scorebar.activePlayer == 1 || scorebar.players == 1 ? resources['colors']['score_text'] : resources['colors']['active_score_text']
             align: 'right'
             valign: 'bottom'
-            fontSize:0.25
+            fontSize:0.4
+            shrinkToFit: true
         Label:
-            hints: {w: 1, h: 0.67}
             text: scorebar.players === 1 ? scorebar.hiScore.toString() : scorebar.score_2.toString()
             color: scorebar.activePlayer == 1 || scorebar.players == 1 ? resources['colors']['score_text'] : resources['colors']['active_score_text']
             align: 'right'
@@ -65,16 +68,16 @@
 
 <WordBar>:
     id: 'wordbar'
-    hints: {w: null, h: null}
-    orientation: 'vertical'
     word: ''
     wordScore: 0
     canPass: true
-    bgColor: wordbar.word!=='' || wordbar.canPass ? resources['colors']['word_score_background'] : resources['colors']['background']
-    Label:
-        id: 'wordLabel'
-        text: wordbar.word!=='' ? wordbar.word+' for '+wordbar.wordScore.toString() : wordbar.canPass ? 'PASS' : ''
-        color: resources['colors']['word_score_text']
+    text: this.word!=='' ? this.word+' for '+this.wordScore.toString() : this.canPass ? 'PASS' : ''
+    fontSize: 0.5
+    disable: this.word==='' && !this.canPass;
+    bgColor: resources['colors']['word_score_background']
+    selectColor: resources['colors']['menu_button_touched']
+    disableColor1: null;
+    disableColor2: null;
 
 <MessageBar@BoxLayout>:
     id: 'messagebar'
@@ -83,6 +86,7 @@
     Label:
         text: messagebar.message
         color: resources.colors['score_text']
+        fontSize: '0.4'
 
 
 <MenuItem@Button>:
@@ -213,7 +217,7 @@
         on_press: 
             this.parent.selection = 'dailyGame'
     MenuItem:
-        text: 'Multiplayer'
+        text: 'Two-Player Game'
         on_press: 
             this.parent.selection = 'multiplayerMenu'
     MenuItem:

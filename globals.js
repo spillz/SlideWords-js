@@ -33,3 +33,18 @@ export const tiles = [
 ['Z', 4, 1],
 ]
 
+/**@type {Set<string>} */
+export var words = new Set();
+
+export async function loadWords(url) {
+    try {
+        const response = await fetch(url);
+        const text = await response.text();
+        words = new Set(text.split('\n'));
+        return true;
+    } catch (err) {
+        console.error(`Error loading file: ${url}`, err);
+        throw false;
+    }
+    return false
+}
