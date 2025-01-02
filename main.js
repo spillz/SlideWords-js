@@ -835,6 +835,8 @@ export class Board extends eskv.Widget {
     }
     
     confirmWord(widget, touch) {
+        if (!this.activePlayer.localTouch()) return;
+
         if (this.wordbar.word==='' && this.selection.length>0) {
             return false;
         }
