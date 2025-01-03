@@ -10,22 +10,21 @@ import markup from './slidewords.jkv?raw';
 export class SlideWordsApp extends eskv.App {
     prefDimH = 14;
     prefDimW = 10;
+    id = 'app';
     constructor(props={}) {
         super();
+        try {
+            this.colors = colors.themes[localStorage.getItem('SlideWords/theme')??'default'];
+        } catch (error) {
+            this.colors = colors.themes['default'];
+        }
         // eskv.App.rules.add('Label', {fontName: "Arial, Helvetica, sans-serif"});
         eskv.App.rules.add('ScrollView', {uiZoom: false, scrollW: false});
         const markupObjects = eskv.markup.parse(markup);
         this.updateProperties(props)
         /**@type {Map<string, string>} */
         this.config = new Map();
-        this.colors = {};
         this.words = globals.words;
-        try {
-            this.colors = colors.loadTheme(this.config.get('theme')??'default');
-        } catch (error) {
-            this.colors = colors.loadTheme('default');
-        }
-        eskv.App.resources['colors'] = this.colors;
         this.gb = new Board(this.words);
         this.baseWidget.addChild(this.gb);
     }
@@ -34,16 +33,11 @@ export class SlideWordsApp extends eskv.App {
     }
     setNextTheme() {
         const themes = Object.keys(colors.themes);
-        const currentTheme = this.config.get('theme')??'theme';
+        const currentTheme = localStorage.getItem('SlideWords/theme')??'default';
         const ind = themes.indexOf(currentTheme);
-        const newTheme = themes[(ind + 1) % themes.length];
+        const newTheme = ind>=0 ? themes[(ind + 1) % themes.length] : 'default';
         localStorage.setItem('SlideWords/theme', newTheme);
-        this.colors = colors.loadTheme(newTheme);
-        eskv.App.resources['colors'] = this.colors;
-    }
-
-    buildConfig(config) {
-        config.setDefaults('theme', { 'theme': 'beach' });
+        this.colors = colors.themes[newTheme];
     }
 
     on_key_down(event, object, keyInfo) {

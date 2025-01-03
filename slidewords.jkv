@@ -1,12 +1,7 @@
-<TextButton@Button>:
-    color: 'rgb(1, 1, 1)'
-    bgColor: 'rgb(0xbb, 0xad, 0xa0)'
-    fontSize: 0.5
-    bold: true
-
 <HeadingLabel@Label>:
-    bgColor: resources['colors']['checker']
+    bgColor: app.colors['checker']
     fontSize: 0.6
+
 
 <BodyLabel@Label>:
     fontSize: 0.5
@@ -27,14 +22,14 @@
         Label:
             hints: {w:1, h:'1'}
             text: scorebar.playerCount === 1 ? 'SCORE' : 'PLAYER 1'
-            color: scorebar.activePlayer === 2 || scorebar.playerCount === 1? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            color: scorebar.activePlayer === 2 || scorebar.playerCount === 1? app.colors['score_text'] : app.colors['active_score_text']
             align: 'left'
             valign: 'bottom'
             fontSize: 0.4
             shrinkToFit: true
         Label:
             text: scorebar.score.toString()
-            color: scorebar.activePlayer === 2 || scorebar.playerCount === 1? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            color: scorebar.activePlayer === 2 || scorebar.playerCount === 1? app.colors['score_text'] : app.colors['active_score_text']
             align: 'left'
             valign: 'top'
             fontSize: 0.5
@@ -43,7 +38,7 @@
         hints: {w:1, h:'2'}
         Label:
             text: scorebar.playerCount === 2 ? '2-PLAYER\nGAME': scorebar.gameId!=='default' ? 'DAILY\nCHALLENGE' : 'RANDOM\nGAME'
-            color: resources['colors']['score_text']
+            color: app.colors['score_text']
             valign: 'middle'
             fontSize: 0.6
             wrap: True
@@ -53,14 +48,14 @@
         Label:
             hints: {w:1, h:'1'}
             text: scorebar.playerCount === 1 ? 'BEST' : 'PLAYER 2'
-            color: scorebar.activePlayer === 1 || scorebar.playerCount === 1 ? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            color: scorebar.activePlayer === 1 || scorebar.playerCount === 1 ? app.colors['score_text'] : app.colors['active_score_text']
             align: 'right'
             valign: 'bottom'
             fontSize:0.4
             shrinkToFit: true
         Label:
             text: scorebar.playerCount === 1 ? scorebar.hiScore.toString() : scorebar.score_2.toString()
-            color: scorebar.activePlayer === 1 || scorebar.playerCount === 1 ? resources['colors']['score_text'] : resources['colors']['active_score_text']
+            color: scorebar.activePlayer === 1 || scorebar.playerCount === 1 ? app.colors['score_text'] : app.colors['active_score_text']
             align: 'right'
             valign: 'top'
             fontSize:0.5
@@ -73,8 +68,8 @@
     text: this.word!=='' ? this.word+' for '+this.wordScore.toString() : this.canPass ? 'PASS' : ''
     fontSize: 0.5
     disable: this.word==='' && !this.canPass;
-    bgColor: resources['colors']['word_score_background']
-    selectColor: resources['colors']['menu_button_touched']
+    bgColor: app.colors['word_score_background']
+    selectColor: app.colors['menu_button_touched']
     disableColor1: null;
     disableColor2: null;
 
@@ -84,19 +79,18 @@
     message: ''
     Label:
         text: messagebar.message
-        color: resources.colors['score_text']
+        color: app.colors['score_text']
         fontSize: '0.4'
 
 
 <MenuItem@Button>:
-    bgColor: resources['colors']['menu_button_background']
-    selectColor: resources['colors']['menu_button_touched']
+    bgColor: app.colors['menu_button_background']
+    selectColor: app.colors['menu_button_touched']
     hints: {h:'1'}
 
 
 <InstructionsBox@BoxLayout>:
-    bgColor: resources['colors']['checker']
-
+    bgColor: app.colors['checker']
 
 
 <Instructions>:
@@ -106,7 +100,7 @@
     paddingX: '0.01'
     paddingY: '0.01'
     spacingX: '0.01'
-    bgColor: resources['colors']['background']
+    bgColor: app.colors['background']
     HeadingLabel:
         hints: {w: 1, h: 0.1}
         text: 'How to Play'
@@ -133,7 +127,7 @@
     spacingX: '0.01'
     detail: ''
     title: 'In Progress'
-    bgColor: resources['colors']['background']
+    bgColor: app.colors['background']
     HeadingLabel:
         hints: {w: 1, h: '1'}
         text: scoredetails1p.title
@@ -162,7 +156,7 @@
     detail1: ''
     detail2: ''
     title: 'In Progress'
-    bgColor: resources['colors']['background']
+    bgColor: app.colors['background']
     HeadingLabel:
         hints: {w: 1, h: '1'}
         text: scoredetail2p.title
@@ -196,9 +190,9 @@
 <Menu>:
     id: 'mainMenu'
     orientation: 'vertical'
-    hints: {center_x:0.5, center_y:0.5, h:null, w:0.8}
+    hints: {center_x:0.5, center_y:0.5, h:null, w:'8'}
     selection: '';
-    bgColor: resources['colors']['background']
+    bgColor: app.colors['background']
     paddingX: '0.01'
     paddingY: '0.01'
     spacingY: '0.01'
@@ -223,6 +217,10 @@
         text: 'Instructions'
         on_press: 
             this.parent.selection = 'instructions'
+    MenuItem:
+        text: 'Color Scheme'
+        on_press: 
+            this.parent.selection = 'theme'
 #    MenuItem:
 #        text: 'Leaderboards'
 #        on_press: 
@@ -232,17 +230,13 @@
 #        on_press: 
 #            this.parent.selection = 'achievements'
 #    MenuItem:
-#        text: 'Theme'
-#        on_press: 
-#            this.parent.selection = 'theme'
-#    MenuItem:
 #        text: 'Quit'
 #        on_press: 
 #            this.parent.selection = 'quit'
 
 
 <MultiplayerMenu>:
-    hints: {center_x:0.5, center_y:0.5, h:null, w:0.8}
+    hints: {center_x:0.5, center_y:0.5, h:null, w:'8'}
     id: 'multiplayerMenu'
     orientation: 'vertical'
     player1: 1
@@ -253,7 +247,7 @@
     paddingY: '0.01'
     spacingY: '0.01'
     spacingX: '0.01'
-    bgColor: resources['colors']['background']
+    bgColor: app.colors['background']
     MenuItem:
         text: 'Start Game'
         on_press:
@@ -269,10 +263,10 @@
 
 
 <LeaderboardMenu>:
-    hints: {center_x:0.5, center_y:0.5, h:null, w:0.8}
+    hints: {center_x:0.5, center_y:0.5, h:null, w:'8'}
     orientation: 'vertical'
     selection: ''
-    bgColor: resources['colors']['background']
+    bgColor: app.colors['background']
     paddingX: '0.01'
     paddingY: '0.01'
     spacingY: '0.01'

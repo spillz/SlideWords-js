@@ -43,10 +43,6 @@ export class Tile extends eskv.Widget {
                 hints: {x:0.67,y:0.67,w:.33,h:.33},
             })
         ]
-        this.bgColor = eskv.App.resources['colors']['tile'];
-        SlideWordsApp.get().bind('colors', (e,o,v)=>{
-            this.updateBgColor();
-        })
         this.letter = letter;
         this.value = value;
         this.gposX = x;
@@ -59,11 +55,10 @@ export class Tile extends eskv.Widget {
         [this.x, this.y] = this.gpos;
         this.board = board;
         this.selected = false;
-
-    }
-
-    draw(app, ctx) {
-        super.draw(app, ctx);
+        const props = {
+            bgColor:(app)=>this.selected? app.colors['tile_selected']: app.colors['tile'], 
+        };
+        this.updateProperties(props);
     }
 
     on_letter(event, object, value) {
@@ -75,13 +70,13 @@ export class Tile extends eskv.Widget {
     }
 
     updateBgColor() {
-        let colors = eskv.App.resources['colors'];
+        let colors = SlideWordsApp.get().colors;
         this.bgColor = this.selected? colors['tile_selected']: colors['tile'];
     }
-
-    on_selected(event, object, value) {
-        this.updateBgColor();
-    }
+    
+    // on_selected(event, object, value) {
+    //     this.updateBgColor();
+    // }
 
     on_gpos(event, object, value) {
         if (this.cpos[0] === -1 && this.cpos[1] === -1) {
@@ -207,8 +202,8 @@ export class Board extends eskv.Widget {
         this.menu = new Menu();
         this.menu.bind('selection', (e,o,v) => this.menuChoice(o,v));
         this.menuButton = new MenuButton({text:'MENU', 
-            bgColor:eskv.App.resources['colors']['menu_button_background'], 
-            selectColor:eskv.App.resources['colors']['menu_button_touched'],
+            bgColor:(app)=>app.colors['menu_button_background'], 
+            selectColor:(app)=>app.colors['menu_button_touched'],
             align: 'center',
         });
         this.menuButton.bind('press', (e,o,v) => this.showMenu());
@@ -580,19 +575,23 @@ export class Board extends eskv.Widget {
         }
     }
     
-    /**@type {eskv.Widget['draw']} */
+    /**
+     * 
+     * @param {SlideWordsApp} app 
+     * @param {CanvasRenderingContext2D} ctx 
+     */
     draw(app, ctx) {
         // Clear the canvas and set the background color
         ctx.clearRect(this.x, this.y, this.w, this.h);
-        ctx.fillStyle = colors.background;
+        ctx.fillStyle = app.colors['background'];
         ctx.fillRect(this.x, this.y, this.w, this.h);
 
-        ctx.strokeStyle = colors.checker;
+        ctx.strokeStyle = app.colors['checker'];
         ctx.lineWidth = 0.05;        
         ctx.strokeRect(this.offX, this.offY, this.boardSize, this.boardSize);
 
         // Draw checkerboard pattern
-        ctx.fillStyle = colors.checker;
+        ctx.fillStyle = app.colors['checker'];
         for (let x = 0; x < globals.boardDim; x++) {
             for (let y = 0; y < globals.boardDim; y++) {
                 if ((x + y) % 2 === 0) {
@@ -609,7 +608,7 @@ export class Board extends eskv.Widget {
         const candidates = this.candidates;
         // Draw move candidates if any
         if (candidates !== null) {
-            ctx.fillStyle = colors.moveCandidates;
+            ctx.fillStyle = app.colors['moveCandidates'];
             candidates.forEach(c => {
                 let [x, y] = c;
                 ctx.fillRect(

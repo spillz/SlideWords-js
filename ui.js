@@ -1,20 +1,24 @@
 //@ts-check
 
 import * as eskv from '../eskv/lib/eskv.js';
+import { SlideWordsApp } from './app.js';
 
 import { Player, playerNames} from './players.js';
 
 export class MenuButton extends eskv.Button {
-    /**@type {eskv.Button['draw']}*/
+    /**
+     * 
+     * @param {SlideWordsApp} app 
+     * @param {CanvasRenderingContext2D} ctx 
+     */
     draw(app, ctx) {
         let r = this.rect;
         ctx.beginPath();
         ctx.rect(r[0], r[1], r[2], r[3]/5);        
         ctx.rect(r[0], r[1] + r[3]*0.4, r[2], r[3]/5);        
         ctx.rect(r[0], r[1] + r[3]*0.8, r[2], r[3]/5);
-        ctx.fillStyle = this._touching ? eskv.App.resources['colors']['menu_button_touched']: eskv.App.resources['colors']['score_text'];
+        ctx.fillStyle = this._touching ? app.colors['menu_button_touched']: app.colors['score_text'];
         ctx.fill();
-
     }
 }
 
